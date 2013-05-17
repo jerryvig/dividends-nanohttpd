@@ -16,6 +16,10 @@ mktneutral.dividends.YahooDividends = function(){
 	this.displayTable = document.getElementById('displayTable');
 };
 
+/**
+ * Retrieves JSON data from the server and then adds that data to the display table of the page.
+ *
+ */
 mktneutral.dividends.YahooDividends.prototype.getData = function(){
 	var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function(){
@@ -26,7 +30,7 @@ mktneutral.dividends.YahooDividends.prototype.getData = function(){
 	    		
 	    		recordsObject.recs.forEach(function(record){
 	    			var row = document.createElement('tr');
-      	 			row.innerHTML = '<td>' + record.t + '</td><td>' + record.n + '</td><td>' + record.s + '</td><td>' + record.i + '</td><td>' + record.mc + '</td><td>' + record.y + '</td>';
+      	 			row.innerHTML = '<td><a href="http://finance.yahoo.com/q?s=' + record.t + '" target="_blank">' + record.t + '</td><td>' + record.n + '</td><td>' + record.s + '</td><td>' + record.i + '</td><td>' + record.mc + '</td><td>' + record.y + '</td>';
       	 			var ticker = document.createElement('tr');
       	 			 
 	    			if ( i%2 == 0 ) {
