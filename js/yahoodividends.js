@@ -3,21 +3,53 @@
  *
  */
 
-$(document).ready(function(){
-   $.getJSON('/getData',function(data){
-      var records = data.recs;
-      var i = 0;     
-      $.each(records,function(idx,record){
-         if ( i%2 == 0 ) {
-      	 	var row = '<tr class="white-row"><td>' + record.t + '</td><td>' + record.n + '</td><td>' + record.s + '</td><td>' + record.i + '</td><td>' + record.mc + '</td><td>' + record.y + '</td></tr>';
-      	 } else {
-      	 	var row = '<tr class="blue-row"><td>' + record.t + '</td><td>' + record.n + '</td><td>' + record.s + '</td><td>' + record.i + '</td><td>' +  record.mc + '</td><td>' + record.y + '</td></tr>';
-      	 }
-      	 $('#displayTable').append( row );
-      	 i++;
-      });
-   });   
-});
+//namespace declarations.
+var mktneutral = {};
+mktneutral.dividends = {};
+
+/**
+ * Create the new YahooDividends JavaScript object. 
+ *
+ * @constructor 
+ */
+mktneutral.dividends.YahooDividends = function(){
+	this.displayTable = document.getElementById('displayTable');
+};
+
+mktneutral.dividends.YahooDividends.prototype.getData = function(){
+	var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function(){
+		if ( xhr.readyState==4 ){
+	    	if ( xhr.status==200 ){
+	    		var i = 0;
+	    		var recordsObject = JSON.parse(xhr.responseText);
+	    		
+	    		recordsObject.recs.forEach(function(record){
+	    			var row = document.createElement('tr');
+      	 			row.innerHTML = '<td>' + record.t + '</td><td>' + record.n + '</td><td>' + record.s + '</td><td>' + record.i + '</td><td>' + record.mc + '</td><td>' + record.y + '</td>';
+      	 			var ticker = document.createElement('tr');
+      	 			 
+	    			if ( i%2 == 0 ) {
+      	 				row.setAttribute('class','white-row');
+      	 			} else {
+      	 				row.setAttribute('class','blue-row');
+      	 			}
+      	 			
+      	 			this.displayTable.appendChild( row );
+      				i++;
+	    		});
+	    	}
+	    }
+	}
+	
+	xhr.open('GET','/getData',true);
+    xhr.send();	
+};
+
+window.onload = function(){
+	var yahooDividends = new mktneutral.dividends.YahooDividends();
+	yahooDividends.getData();
+};
 
 
 

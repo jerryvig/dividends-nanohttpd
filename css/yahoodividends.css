@@ -1,5 +1,12 @@
+body {
+   margin: 0px;
+   padding: 0px;
+}
+
 #displayTable {
    font-family: sans-serif;
+   width:100%;
+   border-width:0px;
 }
 
 .blue-row {
@@ -9,5 +16,5 @@
 
 .white-row {
    background-color: white;
-   color: black;
+   color: #007FFF;
 }

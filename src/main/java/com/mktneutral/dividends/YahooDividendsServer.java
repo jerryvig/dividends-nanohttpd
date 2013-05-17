@@ -1,15 +1,9 @@
 package com.mktneutral.dividends;
 
 import java.util.Map;
-import java.util.zip.Deflater;
-import java.util.zip.GZIPOutputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.OutputStreamWriter;
+import java.util.HashMap;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.text.DecimalFormat;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -23,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONArray;
-import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 
 import fi.iki.elonen.NanoHTTPD;
 import fi.iki.elonen.ServerRunner;
@@ -38,18 +31,22 @@ public class YahooDividendsServer extends NanoHTTPD {
     private DecimalFormat pctFormat = new DecimalFormat("#,###.##%");
     private DecimalFormat dollarFormat = new DecimalFormat("#,###.00");
     
-    private byte[] indexPageData;
-    private byte[] jsFileData;
-    private byte[] cssFileData;
+    private HashMap<String,byte[]> pageData = new HashMap<String,byte[]>();
     
+    /**
+     * Initialize the application here. Load data into memory from here.
+     * 
+     * @constructor
+     */
     public YahooDividendsServer() {
         super(8080);
 
         try {
         	loadMemoryDatabase();
-        	indexPageData = loadFileIntoMemory("./index.html");
-        	jsFileData = loadFileIntoMemory("js/yahoodividends.js");
-        	cssFileData = loadFileIntoMemory("css/yahoodividends.css");
+        	
+        	pageData.put("indexPage", YahooDividendsUtils.loadFileIntoMemory("./index.html"));
+        	pageData.put("jsFile", YahooDividendsUtils.loadFileIntoMemory("js/yahoodividends.js"));
+        	pageData.put("cssFile", YahooDividendsUtils.loadFileIntoMemory("css/yahoodividends.css"));
         } catch ( ClassNotFoundException cnfe ) {
         	cnfe.printStackTrace();
         } catch ( IOException ioe ) {
@@ -62,33 +59,20 @@ public class YahooDividendsServer extends NanoHTTPD {
         logger.info(method + " '" + uri + "' ");
         
         if ( uri.equals("/") ) {
-            return doPage(indexPageData, "text/html");
+            return YahooDividendsUtils.doPage(pageData.get("indexPage"), "text/html");
         }
         else if ( uri.equals("/js/yahoodividends.js") ) {
-        	return doPage(jsFileData, "application/javascript");
+        	return YahooDividendsUtils.doPage(pageData.get("jsFile"), "application/javascript");
         }
         else if ( uri.equals("/getData") ) {
         	return doGetDataPage();
         }
         else if ( uri.equals("/css/yahoodividends.css") ) {
-        	return doPage(cssFileData, "text/css");
+        	return YahooDividendsUtils.doPage(pageData.get("cssFile"), "text/css");
         }
         else {
-        	return doPage(indexPageData, "text/html");
+        	return YahooDividendsUtils.doPage(pageData.get("indexFile"), "text/html");
         }
-    }
-    
-    /**
-     * Serves the cached data for the index page.
-     * 
-     * @return Response containing the InputStream with the index page data.
-     */
-    public Response doPage(byte[] pageData, String contentType) {
-        ByteArrayInputStream in = new ByteArrayInputStream(pageData);
-     
-        NanoHTTPD.Response response = new NanoHTTPD.Response(NanoHTTPD.Response.Status.OK, contentType, in);
-        response.addHeader("Content-Encoding","gzip");
-        return response;
     }
     
     /**
@@ -100,7 +84,7 @@ public class YahooDividendsServer extends NanoHTTPD {
         
         InputStream in = null;
         try {
-        	in = gzipCompressString(responseString);
+        	in = YahooDividendsUtils.gzipCompressString(responseString);
         } catch ( IOException ioe ) {
         	ioe.printStackTrace();
         }
@@ -124,7 +108,7 @@ public class YahooDividendsServer extends NanoHTTPD {
         try {
         	Statement stmt = memoryConnection.createStatement();
         
-        	ResultSet resultSet = stmt.executeQuery("SELECT * FROM full_data WHERE (yield>0.08 AND yield<0.20) ORDER BY yield DESC LIMIT 100");
+        	ResultSet resultSet = stmt.executeQuery("SELECT * FROM full_data WHERE (yield>0.08 AND yield<0.25) ORDER BY yield DESC LIMIT 100");
         	while ( resultSet.next() ) {
         		JSONObject record = new JSONObject();
         		try {
@@ -221,83 +205,5 @@ public class YahooDividendsServer extends NanoHTTPD {
     			}
     		} 
     	}
-    }
-    
-    /**
-     * Loads the file from disk into memory as a GZIP byte[] image.
-     * 
-     * @return  The byte array containing the GZIP image.
-     */
-    public byte[] loadFileIntoMemory(String path) throws IOException {
-    	BufferedReader pageReader = new BufferedReader(new FileReader( path ));
-    	
-    	String pageText = "";
-    	String line;
-    	while ( (line = pageReader.readLine()) != null ) {
-    		pageText = pageText.concat(line.trim());
-    	}
-    	
-    	pageReader.close();
-    	
-    	ByteArrayOutputStream out = new ByteArrayOutputStream();
-    	GZIPOutputStream gzip = new GZIPOutputStream(out, Deflater.BEST_COMPRESSION);
-    	OutputStreamWriter writer = new OutputStreamWriter(gzip);
-    	writer.write(pageText);
-    	writer.close();
-    	out.close();
-    	
-    	return out.toByteArray();
-    } 
-    
-    /**
-     * Takes a string and compresses it in GZIP format. The output is a InputStream to be 
-     * written on the HTTP response body.
-     * 
-     * @param str  Input string to compress.
-     * @return InputStream the gzip compress stream that will written on the HTTP response body.
-     * @throws IOException
-     */
-    public InputStream gzipCompressString(String str) throws IOException {
-    	ByteArrayInputStream in = null;
-    	
-    	if ( str == null || str.length() == 0 ) {
-    		return in;
-    	}
-    	
-    	ByteArrayOutputStream out = new ByteArrayOutputStream();
-    	GZIPOutputStream gzip = new GZIPOutputStream(out, Deflater.BEST_COMPRESSION);
-    	OutputStreamWriter writer = new OutputStreamWriter(gzip);
-    	writer.write(str);
-    	writer.close();
-    	out.close();
-    	
-    	in = new ByteArrayInputStream(out.toByteArray());
-    	return in;
-    }
-    
-    /**
-     * Takes a string and compresses it in BZIP2 format. The output is a InputStream to be 
-     * written on the HTTP response body.
-     * 
-     * @param str  Input string to compress.
-     * @return InputStream the gzip compress stream that will written on the HTTP response body.
-     * @throws IOException
-     */
-    public InputStream bzip2CompressString(String str) throws IOException {
-    	ByteArrayInputStream in = null;
-    	
-    	if ( str == null || str.length() == 0 ) {
-    		return in;
-    	}
-    	
-    	ByteArrayOutputStream out = new ByteArrayOutputStream();
-    	BZip2CompressorOutputStream gzip = new BZip2CompressorOutputStream(out);
-    	OutputStreamWriter writer = new OutputStreamWriter(gzip);
-    	writer.write(str);
-    	writer.close();
-    	out.close();
-    	
-    	in = new ByteArrayInputStream(out.toByteArray());
-    	return in;
     }
 }
