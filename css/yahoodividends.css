@@ -1,0 +1,13 @@
+#displayTable {
+   font-family: sans-serif;
+}
+
+.blue-row {
+   background-color: #007FFF;
+   color: white;
+}
+
+.white-row {
+   background-color: white;
+   color: black;
+}
