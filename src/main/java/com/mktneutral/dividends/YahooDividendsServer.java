@@ -28,7 +28,6 @@ import fi.iki.elonen.ServerRunner;
 public class YahooDividendsServer extends NanoHTTPD {
     private Logger logger = LoggerFactory.getLogger(YahooDividendsServer.class);
     private Connection memoryConnection;
-    private String responseString;
     private DecimalFormat pctFormat = new DecimalFormat("#,###.##%");
     private DecimalFormat dollarFormat = new DecimalFormat("#,###.00");
     
@@ -66,7 +65,7 @@ public class YahooDividendsServer extends NanoHTTPD {
         	return YahooDividendsUtils.doPage(pageData.get("jsFile"), "application/javascript");
         }
         else if ( uri.equals("/getData") ) {
-        	return doGetDataPage();
+        	return doGetDataPage(parms);
         }
         else if ( uri.equals("/css/yahoodividends.css") ) {
         	return YahooDividendsUtils.doPage(pageData.get("cssFile"), "text/css");
@@ -80,8 +79,26 @@ public class YahooDividendsServer extends NanoHTTPD {
      * 
      * @return
      */
-    public Response doGetDataPage() {
-        buildResponse();
+    public Response doGetDataPage(Map<String, String> params) {
+    	int offset = 0;
+    	if ( params.get("offset") != null ) {
+    		try {
+    			offset = Integer.parseInt(params.get("offset"));
+    		} catch ( NumberFormatException nfe ) {
+    			nfe.printStackTrace();
+    		}
+    	}
+    	
+    	int limit = 30;
+    	if ( params.get("limit") != null ) {
+    		try {
+    			limit = Integer.parseInt(params.get("limit"));
+    		} catch ( NumberFormatException nfe ) {
+    			nfe.printStackTrace();
+    		}
+    	}
+    	
+    	String responseString = doSQLQuery(offset, limit);
         
         InputStream in = null;
         try {
@@ -102,14 +119,14 @@ public class YahooDividendsServer extends NanoHTTPD {
         ServerRunner.run(YahooDividendsServer.class);
     }
 
-    public void buildResponse() {
+    public String doSQLQuery(int offset, int limit) {
     	JSONObject recordsObject = new JSONObject();
     	JSONArray recordsArray = new JSONArray();
     	
         try {
         	Statement stmt = memoryConnection.createStatement();
         
-        	ResultSet resultSet = stmt.executeQuery("SELECT * FROM full_data WHERE (yield>0.08 AND yield<0.25) ORDER BY yield DESC LIMIT 100");
+        	ResultSet resultSet = stmt.executeQuery("SELECT * FROM full_data WHERE yield>0.0 ORDER BY yield DESC LIMIT "+ Integer.toString(limit) + " OFFSET "+ Integer.toString(offset));
         	while ( resultSet.next() ) {
         		JSONObject record = new JSONObject();
         		try {
@@ -140,10 +157,13 @@ public class YahooDividendsServer extends NanoHTTPD {
         		jsone.printStackTrace();
         	}
         		
-        	responseString = recordsObject.toString();
+        	String responseString = recordsObject.toString();
         	responseString = responseString.replace("undefined", "undef");
+        	return responseString;
+        	
         } catch ( SQLException sqle ) {
         	sqle.printStackTrace();
+        	return "";
         }
     }
     

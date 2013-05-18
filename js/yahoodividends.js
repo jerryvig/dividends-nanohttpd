@@ -3,7 +3,7 @@
  *
  */
 
-//namespace declarations.
+//Namespace declarations.
 var mktneutral = {};
 mktneutral.dividends = {};
 
@@ -14,6 +14,8 @@ mktneutral.dividends = {};
  */
 mktneutral.dividends.YahooDividends = function(){
 	this.displayTable = document.getElementById('displayTable');
+	this.nextButton = document.getElementById('nextButton');
+	this.lastButton = document.getElementById('lastButton');
 };
 
 /**
@@ -50,8 +52,27 @@ mktneutral.dividends.YahooDividends.prototype.getData = function(){
     xhr.send();	
 };
 
+/**
+ * Click handler for the next button.
+ *
+ */
+mktneutral.dividends.YahooDividends.prototype.nextButtonClickHandler = function(){
+ 	alert('you clicked the next button');
+};
+
+/**
+ * Click handler for the last button.
+ *
+ */
+mktneutral.dividends.YahooDividends.prototype.lastButtonClickHandler = function(){
+ 	alert('you clicked the last button');
+};
+
 window.onload = function(){
 	var yahooDividends = new mktneutral.dividends.YahooDividends();
+	yahooDividends.nextButton.onclick = yahooDividends.nextButtonClickHandler;
+	yahooDividends.lastButton.onclick = yahooDividends.lastButtonClickHandler;
+	
 	yahooDividends.getData();
 };
 
