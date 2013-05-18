@@ -15,7 +15,7 @@ mktneutral.dividends = {};
  * @constructor 
  */
 mktneutral.dividends.YahooDividends = function(){
-	this.offset = 30;
+	this.offset = 0;
 	
 	this.displayTable = document.getElementById('displayTable');
 	this.nextButton = document.getElementById('nextButton');
@@ -95,7 +95,6 @@ mktneutral.dividends.YahooDividends.prototype.nextButtonClickHandler = function(
 	    	if ( xhr.status==200 ){
 	    		var recordsObject = JSON.parse(xhr.responseText);
 	    		self.updateDisplayTable(recordsObject.recs);
-	    		//self.removeTableRows();
 	    	}
 	    }
 	}
@@ -110,7 +109,23 @@ mktneutral.dividends.YahooDividends.prototype.nextButtonClickHandler = function(
  *
  */
 mktneutral.dividends.YahooDividends.prototype.lastButtonClickHandler = function(){
- 	alert('you clicked the last button');
+	var self = this;
+	var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function(){
+		if ( xhr.readyState==4 ){
+	    	if ( xhr.status==200 ){
+	    		var recordsObject = JSON.parse(xhr.responseText);
+	    		self.updateDisplayTable(recordsObject.recs);
+	    	}
+	    }
+	}
+	
+    if ( self.offset > 0 ) {
+    	self.offset -= 30;
+    }
+    
+    xhr.open('GET','/getData?offset='+self.offset,true);
+    xhr.send();	
 };
 
 window.onload = function(){
@@ -119,7 +134,9 @@ window.onload = function(){
 		yahooDividends.nextButtonClickHandler();
 	};
 	
-	yahooDividends.lastButton.onclick = yahooDividends.lastButtonClickHandler;
+	yahooDividends.lastButton.onclick = function(){
+		yahooDividends.lastButtonClickHandler();
+	};
 	
 	yahooDividends.getData();
 };
