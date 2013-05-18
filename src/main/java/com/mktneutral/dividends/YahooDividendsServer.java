@@ -2,7 +2,6 @@ package com.mktneutral.dividends;
 
 import java.util.Map;
 import java.util.HashMap;
-import java.util.ArrayList;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
@@ -119,6 +118,13 @@ public class YahooDividendsServer extends NanoHTTPD {
         ServerRunner.run(YahooDividendsServer.class);
     }
 
+    /**
+     * Performs and SQL query against the sqlite database and returns the result in a JSON encoded string.
+     * 
+     * @param offset
+     * @param limit
+     * @return String  A JSON representation of the SQL query result.
+     */
     public String doSQLQuery(int offset, int limit) {
     	JSONObject recordsObject = new JSONObject();
     	JSONArray recordsArray = new JSONArray();
