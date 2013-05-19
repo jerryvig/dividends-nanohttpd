@@ -57,14 +57,13 @@ mktneutral.dividends.YahooDividends.prototype.updateDisplayTable = function(reco
 	records.forEach(function(record){
 		var row = document.createElement('tr');
 		row.innerHTML = '<td><a href="http://finance.yahoo.com/q?s=' + record.t + '" target="_blank">' + record.t + '</td><td>' + record.n + '</td><td>' + record.s + '</td><td>' + record.i + '</td><td>' + record.mc + '</td><td>' + record.y + '</td>';
-		var ticker = document.createElement('tr');
 			 
 		if ( i%2 == 0 ) {
-				row.setAttribute('class','white-row');
+			row.setAttribute('class','white-row');
 		} else {
-				row.setAttribute('class','blue-row');
+			row.setAttribute('class','blue-row');
 		}
-			
+
 		self.displayTable.appendChild( row );
 		i++;
 	});

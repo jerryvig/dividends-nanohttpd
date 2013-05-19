@@ -1,12 +1,17 @@
 body {
    margin: 0px;
    padding: 5px;
-   background-color: #d0d0d0;
+   background-color: #c0c0c0;
+}
+
+a:active {
+	background-color: #82cafa; 
 }
 
 #displayTable {
    font-family: sans-serif;
    width:100%;
+   border-spacing: 0px;
    border-width:0px;
    border-radius: 10px;
    padding: 5px;
@@ -29,15 +34,19 @@ body {
 	width:48%;
 	color: white;
 	font-family: sans-serif;
-	/* border-radius: 5px; */
+	text-align: center;
+}
+
+.div-button:active {
+	background-color:#82cafa;
 }
 
 #nextButton {
-	border-top-right-radius: 5px;
-	border-bottom-right-radius: 5px;
+	border-top-right-radius: 10px;
+	border-bottom-right-radius: 10px;
 }
 
 #lastButton {
-	border-top-left-radius: 5px;
-	border-bottom-left-radius: 5px;
+	border-top-left-radius: 10px;
+	border-bottom-left-radius: 10px;
 }
