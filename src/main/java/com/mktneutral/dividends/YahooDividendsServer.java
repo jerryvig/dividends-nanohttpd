@@ -27,7 +27,7 @@ import fi.iki.elonen.ServerRunner;
 public class YahooDividendsServer extends NanoHTTPD {
     private Logger logger = LoggerFactory.getLogger(YahooDividendsServer.class);
     private Connection memoryConnection;
-    private DecimalFormat pctFormat = new DecimalFormat("#,###.##%");
+    private DecimalFormat pctFormat = new DecimalFormat("#,###.#%");
     private DecimalFormat dollarFormat = new DecimalFormat("#,###.00");
     
     private HashMap<String,byte[]> pageData = new HashMap<String,byte[]>();
@@ -70,7 +70,7 @@ public class YahooDividendsServer extends NanoHTTPD {
         	return YahooDividendsUtils.doPage(pageData.get("cssFile"), "text/css");
         }
         else {
-        	return YahooDividendsUtils.doPage(pageData.get("indexFile"), "text/html");
+        	return YahooDividendsUtils.doPage(pageData.get("indexPage"), "text/html");
         }
     }
     
@@ -220,6 +220,19 @@ public class YahooDividendsServer extends NanoHTTPD {
     			}
     			
     			resultSet.close();
+    			
+    			//Create the indexes on the full_data table in the memory database.
+    			memoryStmt = memoryConnection.prepareStatement("CREATE INDEX full_data_yield_index ON full_data(yield)");
+    			memoryStmt.executeUpdate();
+    			memoryStmt = memoryConnection.prepareStatement("CREATE INDEX full_data_ticker_index ON full_data(ticker)");
+    			memoryStmt.executeUpdate();
+    			memoryStmt = memoryConnection.prepareStatement("CREATE INDEX full_data_sector_index ON full_data(sector)");
+    			memoryStmt.executeUpdate();
+    			memoryStmt = memoryConnection.prepareStatement("CREATE INDEX full_data_industry_index ON full_data(industry)");
+    			memoryStmt.executeUpdate();
+    			memoryStmt = memoryConnection.prepareStatement("CREATE INDEX full_data_name_index ON full_data(name)");
+    			memoryStmt.executeUpdate();
+    			
     		} catch ( SQLException sqle ) {
     			sqle.printStackTrace();
     		} finally {

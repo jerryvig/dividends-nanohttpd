@@ -123,8 +123,8 @@
 					</execution>
 				</executions>
 				<configuration>
-					<!-- <mainClass>com.mktneutral.dividends.YahooDividendsServer</mainClass> -->
-					<mainClass>org.mozilla.javascript.tools.shell.Main</mainClass>
+					<mainClass>com.mktneutral.dividends.YahooDividendsServer</mainClass>
+					<!--   <mainClass>org.mozilla.javascript.tools.shell.Main</mainClass> -->
 					<arguments>
 						<argument>src/main/js/com/mktneutral/dividends/yahoodividendsserver.js</argument>
 					</arguments>
