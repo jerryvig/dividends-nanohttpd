@@ -74,9 +74,12 @@ public class YahooDividendsServer extends NanoHTTPD {
         }
     }
     
+    
     /**
+     * Returns Response and processes the query 
      * 
-     * @return
+     * @param  params The Map containing the HTTP GET request parameters.
+     * @return Response  The NanoHTTPD response that will be sent to the client.
      */
     public Response doGetDataPage(Map<String, String> params) {
     	int offset = 0;
@@ -164,7 +167,7 @@ public class YahooDividendsServer extends NanoHTTPD {
         	}
         		
         	String responseString = recordsObject.toString();
-        	responseString = responseString.replace("undefined", "undef");
+        	responseString = responseString.replace("undefined", "");
         	return responseString;
         	
         } catch ( SQLException sqle ) {

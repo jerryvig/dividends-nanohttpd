@@ -55,7 +55,19 @@ mktneutral.dividends.YahooDividends.prototype.updateDisplayTable = function(reco
 	this.removeTableRows();
 		
 	records.forEach(function(record){
-		var row = document.createElement('tr');
+		if ( record.n === undefined )
+			record.n = '';
+		
+		if ( record.s === undefined ) 
+			record.s = '';
+		
+		if ( record.i === undefined )
+			record.i = '';
+		
+		if ( record.mc === undefined ) 
+			record.mc = '';
+		
+		var row = document.createElement('tr');		
 		row.innerHTML = '<td><a href="http://finance.yahoo.com/q?s=' + record.t + '" target="_blank">' + record.t + '</td><td>' + record.n + '</td><td>' + record.s + '</td><td>' + record.i + '</td><td>' + record.mc + '</td><td>' + record.y + '</td>';
 			 
 		if ( i%2 == 0 ) {

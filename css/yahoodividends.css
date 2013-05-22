@@ -38,7 +38,8 @@ a:active {
 }
 
 .div-button:active {
-	background-color:#82cafa;
+	background-color: white;
+	color: #007FFF;
 }
 
 #nextButton {

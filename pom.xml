@@ -3,11 +3,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>fi.iki.elonen</groupId>
-	<artifactId>nanohttpd-samples</artifactId>
+	<artifactId>dividends-nanohttpd</artifactId>
 	<version>1.0.0</version>
 	<packaging>jar</packaging>
 
-	<name>NanoHTTPd-samples</name>
+	<name>Dividends-Nanohttpd</name>
 	<url>http://maven.apache.org</url>
 
 	<properties>
