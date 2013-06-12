@@ -9,12 +9,15 @@ a:active {
 }
 
 #displayTable {
-   font-family: sans-serif;
+   font-family: arial;
+   font-weight: bold;
    width:100%;
    border-spacing: 0px;
    border-width:0px;
    border-radius: 10px;
    padding: 5px;
+   -webkit-box-shadow: 5px 5px 15px rgba(0,0,0,0.4);
+   -moz-box-shadow: 5px 5px 15px rgba(0,0,0,0.4);
 }
 
 .blue-row {
@@ -33,8 +36,11 @@ a:active {
 	padding:5px;
 	width:48%;
 	color: white;
-	font-family: sans-serif;
+	font-family: arial;
+    font-weight: bold;
 	text-align: center;
+	-webkit-box-shadow: 5px 5px 15px rgba(0,0,0,0.4);
+   	-moz-box-shadow: 5px 5px 15px rgba(0,0,0,0.4);
 }
 
 .div-button:active {
@@ -50,4 +56,13 @@ a:active {
 #lastButton {
 	border-top-left-radius: 10px;
 	border-bottom-left-radius: 10px;
+}
+
+th:active {
+	background-color: white;
+	color: #007FFF;
+}
+
+.yieldCell {
+	text-align: right;
 }

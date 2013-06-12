@@ -2,12 +2,13 @@
  * Copyright 2013 MktNeutral.com 
  * 
  * @fileoverview YahooDividends project for view dividend data for stocks and funds.
- *
+ * 
+ * @author Jerry Vigil
  */
 
 //Namespace declarations.
-var mktneutral = {};
-mktneutral.dividends = {};
+var mktneutral = mktneutral || {};
+mktneutral.dividends = mktneutral.dividends || {};
 
 /**
  * Create the new YahooDividends JavaScript object. 
@@ -20,6 +21,7 @@ mktneutral.dividends.YahooDividends = function(){
 	this.displayTable = document.getElementById('displayTable');
 	this.nextButton = document.getElementById('nextButton');
 	this.lastButton = document.getElementById('lastButton');
+	this.yieldColumnHeader = document.getElementById('yieldColumnHeader');
 };
 
 /**
@@ -68,7 +70,7 @@ mktneutral.dividends.YahooDividends.prototype.updateDisplayTable = function(reco
 			record.mc = '';
 		
 		var row = document.createElement('tr');		
-		row.innerHTML = '<td><a href="http://finance.yahoo.com/q?s=' + record.t + '" target="_blank">' + record.t + '</td><td>' + record.n + '</td><td>' + record.s + '</td><td>' + record.i + '</td><td>' + record.mc + '</td><td>' + record.y + '</td>';
+		row.innerHTML = '<td><a href="http://finance.yahoo.com/q/hp?s=' + record.t + '&g=v" target="_blank">' + record.t + '</td><td>' + record.n + '</td><td>' + record.s + '</td><td>' + record.i + '</td><td>' + record.mc + '</td><td class="yieldCell">' + record.y + '</td>';
 			 
 		if ( i%2 == 0 ) {
 			row.setAttribute('class','white-row');
@@ -96,7 +98,8 @@ mktneutral.dividends.YahooDividends.prototype.removeTableRows = function(){
 
 /**
  * Click handler for the next button.
- *
+ * 
+ *	The offset is incremented up by 30 each time the next button is clicked.
  */
 mktneutral.dividends.YahooDividends.prototype.nextButtonClickHandler = function(){
 	var self = this;
@@ -139,18 +142,14 @@ mktneutral.dividends.YahooDividends.prototype.lastButtonClickHandler = function(
     xhr.send();	
 };
 
-window.onload = function(){
-	var yahooDividends = new mktneutral.dividends.YahooDividends();
-	yahooDividends.nextButton.onclick = function(){
-		yahooDividends.nextButtonClickHandler();
-	};
-	
-	yahooDividends.lastButton.onclick = function(){
-		yahooDividends.lastButtonClickHandler();
-	};
-	
-	yahooDividends.getData();
+//Main execution begins here.
+var yahooDividends = new mktneutral.dividends.YahooDividends();
+yahooDividends.nextButton.onclick = function(){
+	yahooDividends.nextButtonClickHandler();
 };
-
-
-
+	
+yahooDividends.lastButton.onclick = function(){
+	yahooDividends.lastButtonClickHandler();
+};
+	
+yahooDividends.getData();

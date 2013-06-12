@@ -53,6 +53,10 @@ public class YahooDividendsServer extends NanoHTTPD {
         }
     }
 
+    /**
+     * The main serve method that is overridden from the nanohttpd framework.
+     * 
+     */
     @Override
     public Response serve(String uri, Method method, Map<String, String> header, Map<String, String> parms, Map<String, String> files) {
         logger.info(method + " '" + uri + "' ");
@@ -142,12 +146,12 @@ public class YahooDividendsServer extends NanoHTTPD {
         			record.put("t", resultSet.getString(1));
         			record.put("n", resultSet.getString(2));
         			record.put("mc", resultSet.getString(3));
-        			record.put("pe", resultSet.getString(4));
-        			record.put("ep", resultSet.getString(5));
-        			record.put("tt", dollarFormat.format(resultSet.getDouble(6)));
+        			// record.put("pe", resultSet.getString(4));
+        			// record.put("ep", resultSet.getString(5));
+        			// record.put("tt", dollarFormat.format(resultSet.getDouble(6)));
         			record.put("l", dollarFormat.format(resultSet.getDouble(7)));
         			record.put("y", pctFormat.format(resultSet.getDouble(8)));
-        			record.put("im", resultSet.getString(9));
+        			// record.put("im", resultSet.getString(9));
         			record.put("s", resultSet.getString(10));
         			record.put("i", resultSet.getString(11));
         			record.put("ft", resultSet.getString(12));
@@ -178,7 +182,7 @@ public class YahooDividendsServer extends NanoHTTPD {
     
     
     /**
-     *  Loads data from the database on disk (YahooDividends.db) into the sqlite in memory database.
+     *  Loads data from the sqlite database on disk (YahooDividends.db) into the sqlite in memory database.
      *  
      */
     public void loadMemoryDatabase() throws ClassNotFoundException {
