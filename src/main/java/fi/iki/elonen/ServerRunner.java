@@ -21,12 +21,17 @@ public class ServerRunner {
 
         System.out.println("Server started, Hit Enter to stop.\n");
 
-        try {
+        /* try {
             System.in.read();
         } catch (Throwable ignored) {
-        }
+        } */
 
-        server.stop();
-        System.out.println("Server stopped.\n");
+	while ( true ) {
+	    try {
+                Thread.sleep( 1000 );
+            } catch ( Exception e ) {}
+        }
+	//      server.stop();
+        // System.out.println("Server stopped.\n");
     }
 }
