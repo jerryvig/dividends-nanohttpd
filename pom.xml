@@ -124,18 +124,41 @@
 				</executions>
 				<configuration>
 					<mainClass>com.mktneutral.dividends.YahooDividendsServer</mainClass>
-					<!--   <mainClass>org.mozilla.javascript.tools.shell.Main</mainClass> -->
+					<!--   <mainClass>org.mozilla.javascript.tools.shell.Main</mainClass>
 					<arguments>
 						<argument>src/main/js/com/mktneutral/dividends/yahoodividendsserver.js</argument>
-					</arguments>
+					</arguments> -->
 					<systemProperties>
-						<systemProperty>
+				<systemProperty>
 							<key>myproperty</key>
 							<value>myvalue</value>
 						</systemProperty>
 					</systemProperties>
 				</configuration>
 			</plugin>
+			<plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+         <artifactId>maven-assembly-plugin</artifactId>
+       <executions>
+             <execution>
+         <goals>
+           <goal>attached</goal>
+         </goals>
+         <phase>package</phase>
+         <configuration>
+           <descriptorRefs>
+             <descriptorRef>jar-with-dependencies</descriptorRef>
+          </descriptorRefs>
+          <archive>
+            <manifest>
+              <mainClass>com.mktneutral.dividends.YahooDividendsServer</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
+     </execution>
+  </executions>
+</plugin>
+
 		</plugins>
 	</build>
 </project>
