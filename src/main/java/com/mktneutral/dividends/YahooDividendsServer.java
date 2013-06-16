@@ -12,6 +12,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.PreparedStatement;
 
+import javax.ws.rs.core.MediaType;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.json.JSONException;
@@ -38,7 +40,7 @@ public class YahooDividendsServer extends NanoHTTPD {
      * @constructor
      */
     public YahooDividendsServer() {
-        super(8080);
+        super(80);
 
         try {
         	loadMemoryDatabase();
@@ -62,10 +64,10 @@ public class YahooDividendsServer extends NanoHTTPD {
         logger.info(method + " '" + uri + "' ");
         
         if ( uri.equals("/") ) {
-            return YahooDividendsUtils.doPage(pageData.get("indexPage"), "text/html");
+            return YahooDividendsUtils.doPage(pageData.get("indexPage"), MediaType.TEXT_HTML);
         }
         else if ( uri.equals("/js/yahoodividends.js") ) {
-        	return YahooDividendsUtils.doPage(pageData.get("jsFile"), "application/javascript");
+        	return YahooDividendsUtils.doPage(pageData.get("jsFile"),  "application/javascript");
         }
         else if ( uri.equals("/getData") ) {
         	return doGetDataPage(parms);
@@ -74,7 +76,7 @@ public class YahooDividendsServer extends NanoHTTPD {
         	return YahooDividendsUtils.doPage(pageData.get("cssFile"), "text/css");
         }
         else {
-        	return YahooDividendsUtils.doPage(pageData.get("indexPage"), "text/html");
+        	return YahooDividendsUtils.doPage(pageData.get("indexPage"), MediaType.TEXT_HTML);
         }
     }
     
@@ -104,7 +106,18 @@ public class YahooDividendsServer extends NanoHTTPD {
     		}
     	}
     	
-    	String responseString = doSQLQuery(offset, limit);
+    	String sortColumn = "yield";
+    	String sortOrder = "desc";
+    	
+    	if ( params.get("sortColumn") != null ) {
+            sortColumn = params.get("sortColumn").trim();
+    	}
+    	
+    	if ( params.get("sortOrder") != null ) {
+    		sortOrder = params.get("sortOrder").trim();
+    	}
+    	
+    	String responseString = doSQLQuery(offset, limit, sortColumn, sortOrder);
         
         InputStream in = null;
         try {
@@ -132,14 +145,14 @@ public class YahooDividendsServer extends NanoHTTPD {
      * @param limit
      * @return String  A JSON representation of the SQL query result.
      */
-    public String doSQLQuery(int offset, int limit) {
+    public String doSQLQuery(int offset, int limit, String sortColumn, String sortOrder) {
     	JSONObject recordsObject = new JSONObject();
     	JSONArray recordsArray = new JSONArray();
     	
         try {
         	Statement stmt = memoryConnection.createStatement();
         
-        	ResultSet resultSet = stmt.executeQuery("SELECT * FROM full_data WHERE yield>0.0 ORDER BY yield DESC LIMIT "+ Integer.toString(limit) + " OFFSET "+ Integer.toString(offset));
+        	ResultSet resultSet = stmt.executeQuery("SELECT * FROM full_data WHERE yield>0.0 ORDER BY " + sortColumn + " "  + sortOrder + " LIMIT "+ Integer.toString(limit) + " OFFSET "+ Integer.toString(offset));
         	while ( resultSet.next() ) {
         		JSONObject record = new JSONObject();
         		try {
@@ -191,9 +204,9 @@ public class YahooDividendsServer extends NanoHTTPD {
     	Connection conn = null;
 
     	try {
-    		memoryConnection = DriverManager.getConnection("jdbc:sqlite::memory:");
+    		  memoryConnection = DriverManager.getConnection("jdbc:sqlite::memory:");
     	} catch ( SQLException sqle ) {
-    		sqle.printStackTrace();
+    		  sqle.printStackTrace();
     	}
     	
     	if ( memoryConnection != null ) {
@@ -238,6 +251,8 @@ public class YahooDividendsServer extends NanoHTTPD {
     			memoryStmt = memoryConnection.prepareStatement("CREATE INDEX full_data_industry_index ON full_data(industry)");
     			memoryStmt.executeUpdate();
     			memoryStmt = memoryConnection.prepareStatement("CREATE INDEX full_data_name_index ON full_data(name)");
+    			memoryStmt.executeUpdate();
+    			memoryStmt = memoryConnection.prepareStatement("CREATE INDEX full_data_ttmc_index ON full_data(ttmd)");
     			memoryStmt.executeUpdate();
     			
     		} catch ( SQLException sqle ) {

@@ -17,11 +17,17 @@ mktneutral.dividends = mktneutral.dividends || {};
  */
 mktneutral.dividends.YahooDividends = function(){
 	this.offset = 0;
+	this.sortOrder = 'desc';
 	
 	this.displayTable = document.getElementById('displayTable');
 	this.nextButton = document.getElementById('nextButton');
 	this.lastButton = document.getElementById('lastButton');
 	this.yieldColumnHeader = document.getElementById('yieldColumnHeader');
+	this.marketCapColumnHeader = document.getElementById('marketCapColumnHeader');
+	this.tickerColumnHeader = document.getElementById('tickerColumnHeader');
+	this.nameColumnHeader = document.getElementById('nameColumnHeader');
+	this.sectorColumnHeader = document.getElementById('sectorColumnHeader');
+	this.industryColumnHeader = document.getElementById('industryColumnHeader');
 };
 
 /**
@@ -142,6 +148,29 @@ mktneutral.dividends.YahooDividends.prototype.lastButtonClickHandler = function(
     xhr.send();	
 };
 
+/**
+ * Click handler for the yield header.
+ *
+ */
+mktneutral.dividends.YahooDividends.prototype.yieldHeaderClickHandler = function(){
+	var self = this;
+	var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function(){
+		if ( xhr.readyState==4 ){
+	    	if ( xhr.status==200 ){
+	    		var recordsObject = JSON.parse(xhr.responseText);
+	    		self.updateDisplayTable(recordsObject.recs);
+	    	}
+	    }
+	}
+	
+    self.offset = 0;
+    self.sortOrder = (self.sortOrder == 'desc') ? 'asc' : 'desc';
+    
+    xhr.open('GET','/getData?offset='+self.offset+'&sortColumn=yield&sortOrder='+self.sortOrder,true);
+    xhr.send();	
+};
+
 //Main execution begins here.
 var yahooDividends = new mktneutral.dividends.YahooDividends();
 yahooDividends.nextButton.onclick = function(){
@@ -150,6 +179,10 @@ yahooDividends.nextButton.onclick = function(){
 	
 yahooDividends.lastButton.onclick = function(){
 	yahooDividends.lastButtonClickHandler();
+};
+
+yahooDividends.yieldColumnHeader.onclick = function(){
+	yahooDividends.yieldHeaderClickHandler();
 };
 	
 yahooDividends.getData();
