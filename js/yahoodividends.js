@@ -110,19 +110,11 @@ mktneutral.dividends.YahooDividends.prototype.removeTableRows = function(){
  */
 mktneutral.dividends.YahooDividends.prototype.nextButtonClickHandler = function(){
 	var self = this;
-	var xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function(){
-		if ( xhr.readyState==4 ){
-	    	if ( xhr.status==200 ){
-	    		var recordsObject = JSON.parse(xhr.responseText);
-	    		self.updateDisplayTable(recordsObject.recs);
-	    	}
-	    }
-	}
-	
     self.offset += 30;
-	xhr.open('GET','/getData?offset='+self.offset+'&sortColumn='+self.sortColumn+'&sortOrder='+self.sortOrder,true);
-	xhr.send();	
+   
+    $.getJSON('/getData?offset='+self.offset+'&sortColumn='+self.sortColumn+'&sortOrder='+self.sortOrder, function(data){
+ 	   self.updateDisplayTable(data.recs);
+  });
 };
 
 /**
@@ -131,22 +123,14 @@ mktneutral.dividends.YahooDividends.prototype.nextButtonClickHandler = function(
  */
 mktneutral.dividends.YahooDividends.prototype.lastButtonClickHandler = function(){
 	var self = this;
-	var xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function(){
-		if ( xhr.readyState==4 ){
-	    	if ( xhr.status==200 ){
-	    		var recordsObject = JSON.parse(xhr.responseText);
-	    		self.updateDisplayTable(recordsObject.recs);
-	    	}
-	    }
-	}
 	
     if ( self.offset > 0 ) {
     	self.offset -= 30;
     }
     
-    xhr.open('GET','/getData?offset='+self.offset+'&sortColumn='+self.sortColumn+'&sortOrder='+self.sortOrder,true);
-    xhr.send();	
+    $.getJSON('/getData?offset='+self.offset+'&sortColumn='+self.sortColumn+'&sortOrder='+self.sortOrder, function(data){
+  	   self.updateDisplayTable(data.recs);
+    });
 };
 
 /**
@@ -161,7 +145,7 @@ mktneutral.dividends.YahooDividends.prototype.yieldHeaderClickHandler = function
     
     $.getJSON('/getData?offset='+self.offset+'&sortColumn='+self.sortColumn+'&sortOrder='+self.sortOrder, function(data){
  	   self.updateDisplayTable(data.recs);
-  });
+   });
 };
 
 /**
