@@ -18,6 +18,7 @@ mktneutral.dividends = mktneutral.dividends || {};
 mktneutral.dividends.YahooDividends = function(){
 	this.offset = 0;
 	this.sortOrder = 'desc';
+	this.sortColumn = 'yield';
 	
 	this.displayTable = document.getElementById('displayTable');
 	this.nextButton = document.getElementById('nextButton');
@@ -120,8 +121,8 @@ mktneutral.dividends.YahooDividends.prototype.nextButtonClickHandler = function(
 	}
 	
     self.offset += 30;
-	xhr.open('GET','/getData?offset='+self.offset,true);
-    xhr.send();	
+	xhr.open('GET','/getData?offset='+self.offset+'&sortColumn='+self.sortColumn+'&sortOrder='+self.sortOrder,true);
+	xhr.send();	
 };
 
 /**
@@ -144,7 +145,7 @@ mktneutral.dividends.YahooDividends.prototype.lastButtonClickHandler = function(
     	self.offset -= 30;
     }
     
-    xhr.open('GET','/getData?offset='+self.offset,true);
+    xhr.open('GET','/getData?offset='+self.offset+'&sortColumn='+self.sortColumn+'&sortOrder='+self.sortOrder,true);
     xhr.send();	
 };
 
@@ -154,22 +155,89 @@ mktneutral.dividends.YahooDividends.prototype.lastButtonClickHandler = function(
  */
 mktneutral.dividends.YahooDividends.prototype.yieldHeaderClickHandler = function(){
 	var self = this;
-	var xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function(){
-		if ( xhr.readyState==4 ){
-	    	if ( xhr.status==200 ){
-	    		var recordsObject = JSON.parse(xhr.responseText);
-	    		self.updateDisplayTable(recordsObject.recs);
-	    	}
-	    }
-	}
-	
     self.offset = 0;
     self.sortOrder = (self.sortOrder == 'desc') ? 'asc' : 'desc';
+    self.sortColumn = 'yield';
     
-    xhr.open('GET','/getData?offset='+self.offset+'&sortColumn=yield&sortOrder='+self.sortOrder,true);
-    xhr.send();	
+    $.getJSON('/getData?offset='+self.offset+'&sortColumn='+self.sortColumn+'&sortOrder='+self.sortOrder, function(data){
+ 	   self.updateDisplayTable(data.recs);
+  });
 };
+
+/**
+ * Click handler for the name header.
+ *
+ */
+mktneutral.dividends.YahooDividends.prototype.nameHeaderClickHandler = function(){
+	var self = this;
+    self.offset = 0;
+    self.sortOrder = (self.sortOrder == 'desc') ? 'asc' : 'desc';
+    self.sortColumn = 'name';
+    
+    $.getJSON('/getData?offset='+self.offset+'&sortColumn='+self.sortColumn+'&sortOrder='+self.sortOrder, function(data){
+    	   self.updateDisplayTable(data.recs);
+     });
+};	
+
+/**
+ * Click handler for the sector header.
+ *
+ */
+mktneutral.dividends.YahooDividends.prototype.sectorHeaderClickHandler = function(){
+	var self = this;
+    self.offset = 0;
+    self.sortOrder = (self.sortOrder == 'desc') ? 'asc' : 'desc';
+    self.sortColumn = 'sector';
+    
+    $.getJSON('/getData?offset='+self.offset+'&sortColumn='+self.sortColumn+'&sortOrder='+self.sortOrder, function(data){
+   	     self.updateDisplayTable(data.recs);
+    });
+};	
+
+/**
+ * Click handler for the industry header.
+ *
+ */
+mktneutral.dividends.YahooDividends.prototype.industryHeaderClickHandler = function(){
+     var self = this;
+     self.offset = 0;
+     self.sortOrder = (self.sortOrder == 'desc') ? 'asc' : 'desc';
+     self.sortColumn = 'industry';
+     
+     $.getJSON('/getData?offset='+self.offset+'&sortColumn='+self.sortColumn+'&sortOrder='+self.sortOrder, function(data){
+    	 self.updateDisplayTable(data.recs);
+     });
+};	
+
+/**
+ * Click handler for the market cap header.
+ *
+ */
+mktneutral.dividends.YahooDividends.prototype.marketCapHeaderClickHandler = function(){
+     var self = this;
+     self.offset = 0;
+     self.sortOrder = (self.sortOrder == 'desc') ? 'asc' : 'desc';
+     self.sortColumn = 'market_cap';
+     
+     $.getJSON('/getData?offset='+self.offset+'&sortColumn='+self.sortColumn+'&sortOrder='+self.sortOrder, function(data){
+    	 self.updateDisplayTable(data.recs);
+     });
+};	
+	
+/**
+ * Click handler for the ticker header.
+ *
+ */
+mktneutral.dividends.YahooDividends.prototype.tickerHeaderClickHandler = function(){
+     var self = this;
+     self.offset = 0;
+     self.sortOrder = (self.sortOrder == 'desc') ? 'asc' : 'desc';
+     self.sortColumn = 'ticker';
+     
+     $.getJSON('/getData?offset='+self.offset+'&sortColumn='+self.sortColumn+'&sortOrder='+self.sortOrder, function(data){
+    	 self.updateDisplayTable(data.recs);
+     });
+};	
 
 //Main execution begins here.
 var yahooDividends = new mktneutral.dividends.YahooDividends();
@@ -184,5 +252,25 @@ yahooDividends.lastButton.onclick = function(){
 yahooDividends.yieldColumnHeader.onclick = function(){
 	yahooDividends.yieldHeaderClickHandler();
 };
-	
+
+yahooDividends.nameColumnHeader.onclick = function(){
+	yahooDividends.nameHeaderClickHandler();
+};
+
+yahooDividends.sectorColumnHeader.onclick = function(){
+	yahooDividends.sectorHeaderClickHandler();
+};
+
+yahooDividends.industryColumnHeader.onclick = function(){
+	yahooDividends.industryHeaderClickHandler();
+};
+
+yahooDividends.marketCapColumnHeader.onclick = function(){
+	yahooDividends.marketCapHeaderClickHandler();
+};
+
+yahooDividends.tickerColumnHeader.onclick = function(){
+	yahooDividends.tickerHeaderClickHandler();
+}
+
 yahooDividends.getData();

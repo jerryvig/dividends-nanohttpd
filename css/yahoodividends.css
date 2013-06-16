@@ -20,6 +20,12 @@ a:active {
    -moz-box-shadow: 5px 5px 15px rgba(0,0,0,0.4);
 }
 
+.blue-row-header {
+	 background-color: #007FFF;
+     color: white;
+     font-size: large;
+}
+
 .blue-row {
    background-color: #007FFF;
    color: white;
