@@ -10,12 +10,30 @@ mktneutral.dividends = mktneutral.dividends || {};
  */
 mktneutral.dividends.YahooDividendsServer = function() {
 	 this.http = require('http');
+	 this.fs = require('fs');
 	 this.port = 80;
 	 this.sqlite3 = require('sqlite3').verbose();
 	 this.memoryDb = null;
 	 this.diskDb = null;
+	 this.pageData = new Object();
 	 
 	 this.loadMemoryDatabase();
+	 this.loadFiles();
+};
+
+mktneutral.dividends.YahooDividendsServer.prototype.loadFiles = function(){
+	var self = this;
+	this.fs.readFile('./index.html', function(err, data){
+		self.pageData.indexPage = data;
+	}); 
+	
+	this.fs.readFile('./js/yahoodividends.js', function(err, data){
+		self.pageData.jsFile = data;
+	});
+
+	this.fs.readFile('./css/yahoodividends.css', function(err, data){
+		self.pageData.cssFile = data;
+	});
 };
 
 /**
@@ -31,6 +49,18 @@ mktneutral.dividends.YahooDividendsServer.prototype.serve = function() {
     		   response.write( jsonString );
     		   response.end();
     	    });
+    	 } else if ( request.url == '/' ) {
+    		 response.writeHead(200, {'Content-Type': 'text/html'});
+     		 response.write( self.pageData.indexPage );
+     		 response.end();
+    	 } else if ( request.url == '/js/yahoodividends.js' ) {
+    		 response.writeHead(200, {'Content-Type': 'application/javascript'});
+     		 response.write( self.pageData.jsFile );
+     		 response.end();
+    	 } else if ( request.url == '/css/yahoodividends.css' ) {
+    		 response.writeHead(200, {'Content-Type': 'text/css'});
+     		 response.write( self.pageData.cssFile );
+     		 response.end();
     	 }
      }).listen(this.port);	
      
