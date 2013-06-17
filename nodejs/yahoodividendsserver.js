@@ -10,6 +10,7 @@ mktneutral.dividends = mktneutral.dividends || {};
  */
 mktneutral.dividends.YahooDividendsServer = function() {
 	 this.http = require('http');
+	 this.port = 80;
 	 this.sqlite3 = require('sqlite3').verbose();
 	 this.memoryDb = null;
 	 this.diskDb = null;
@@ -24,12 +25,16 @@ mktneutral.dividends.YahooDividendsServer = function() {
 mktneutral.dividends.YahooDividendsServer.prototype.serve = function() {
 	 var self = this;
      this.http.createServer(function(request, response){
-    	 response.writeHead(200, {'Content-Type': 'application/json'});
-    	 var jsonString = self.doSQLQuery(0, 30, 'yield', 'desc', function(jsonString){
-    		 response.write( jsonString );
-    		 response.end();
-    	 });
-     }).listen(80);	
+    	 if ( request.url == '/getData' ) {
+    	    response.writeHead(200, {'Content-Type': 'application/json'});
+    	    var jsonString = self.doSQLQuery(0, 30, 'yield', 'desc', function(jsonString){
+    		   response.write( jsonString );
+    		   response.end();
+    	    });
+    	 }
+     }).listen(this.port);	
+     
+     console.log( 'YahooDividendsServer started on port '+this.port + '. Waiting for connections.');
 };
 
 
