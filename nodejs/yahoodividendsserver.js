@@ -23,6 +23,10 @@ mktneutral.dividends.YahooDividendsServer = function() {
 	 this.loadFiles();
 };
 
+/**
+ * Loads the static files into memory.
+ * 
+ */
 mktneutral.dividends.YahooDividendsServer.prototype.loadFiles = function(){
 	var self = this;
 	
@@ -39,6 +43,10 @@ mktneutral.dividends.YahooDividendsServer.prototype.loadFiles = function(){
    });
 };
 
+/**
+ * Uses zlib to gzip a static file and then loads that file into a buffer for fast loading from the server.
+ * 
+ */
 mktneutral.dividends.YahooDividendsServer.prototype.loadStaticFile = function(path,callback) {
 	var self = this;
 	this.fs.readFile(path, function(err, data){
