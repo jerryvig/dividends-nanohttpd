@@ -16,8 +16,8 @@ a:active {
    border-width:0px;
    border-radius: 10px;
    padding: 5px;
-   -webkit-box-shadow: 5px 5px 15px rgba(0,0,0,0.4);
-   -moz-box-shadow: 5px 5px 15px rgba(0,0,0,0.4);
+   -webkit-box-shadow: 5px 5px 15px rgba(0,0,0,0.7);
+   -moz-box-shadow: 5px 5px 15px rgba(0,0,0,0.7);
 }
 
 .blue-row-header {
@@ -45,8 +45,8 @@ a:active {
 	font-family: arial;
     font-weight: bold;
 	text-align: center;
-	-webkit-box-shadow: 5px 5px 15px rgba(0,0,0,0.4);
-   	-moz-box-shadow: 5px 5px 15px rgba(0,0,0,0.4);
+	-webkit-box-shadow: 5px 5px 15px rgba(0,0,0,0.7);
+   	-moz-box-shadow: 5px 5px 15px rgba(0,0,0,0.7);
 }
 
 .div-button:active {
@@ -57,11 +57,15 @@ a:active {
 #nextButton {
 	border-top-right-radius: 10px;
 	border-bottom-right-radius: 10px;
+	border-style: outset;
+	border-width: 1px;
 }
 
 #lastButton {
 	border-top-left-radius: 10px;
 	border-bottom-left-radius: 10px;
+	border-style: outset;
+	border-width: 1px;
 }
 
 th:active {
