@@ -11,6 +11,8 @@ mktneutral.dividends = mktneutral.dividends || {};
 mktneutral.dividends.YahooDividendsServer = function() {
 	 this.http = require('http');
 	 this.fs = require('fs');
+	 this.url = require('url');
+	 this.zlib = require('zlib');
 	 this.port = 80;
 	 this.sqlite3 = require('sqlite3').verbose();
 	 this.memoryDb = null;
@@ -24,15 +26,24 @@ mktneutral.dividends.YahooDividendsServer = function() {
 mktneutral.dividends.YahooDividendsServer.prototype.loadFiles = function(){
 	var self = this;
 	this.fs.readFile('./index.html', function(err, data){
-		self.pageData.indexPage = data;
+		var buf = new Buffer(data, 'utf-8');
+		self.zlib.gzip(buf, function(_, result){
+			self.pageData.indexPage = result;
+		});
 	}); 
 	
 	this.fs.readFile('./js/yahoodividends.js', function(err, data){
-		self.pageData.jsFile = data;
+		var buf = new Buffer(data, 'utf-8');
+		self.zlib.gzip(buf, function(_, result){
+			self.pageData.jsFile = result;
+		});
 	});
 
 	this.fs.readFile('./css/yahoodividends.css', function(err, data){
-		self.pageData.cssFile = data;
+		var buf = new Buffer(data, 'utf-8');
+		self.zlib.gzip(buf, function(_, result){
+			self.pageData.cssFile = result;
+		});
 	});
 };
 
@@ -43,24 +54,30 @@ mktneutral.dividends.YahooDividendsServer.prototype.loadFiles = function(){
 mktneutral.dividends.YahooDividendsServer.prototype.serve = function() {
 	 var self = this;
      this.http.createServer(function(request, response){
-    	 if ( request.url == '/getData' ) {
-    	    response.writeHead(200, {'Content-Type': 'application/json'});
-    	    var jsonString = self.doSQLQuery(0, 30, 'yield', 'desc', function(jsonString){
-    		   response.write( jsonString );
-    		   response.end();
+    	 if ( request.url.indexOf('/getData') == 0 ) {
+    	     var urlParts = self.url.parse(request.url, true);
+    	     
+    	     var offset = (urlParts.query.offset > 0) ?  urlParts.query.offset : 0;
+    	     var sortColumn = (urlParts.query.sortColumn) ?  urlParts.query.sortColumn : 'yield';
+    	     var sortOrder = (urlParts.query.sortOrder) ?  urlParts.query.sortOrder : 'desc';
+    	     
+    		 response.writeHead(200, {'Content-Type': 'application/json', 'Content-Encoding' : 'gzip'});
+    	    
+    	     self.doSQLQuery(offset, 30, sortColumn, sortOrder, function(jsonString){
+    	    	 var buf = new Buffer(jsonString, 'utf-8');
+    	 		 self.zlib.gzip(buf, function(_, result){
+    	 			  response.end(result);
+    	 		});
     	    });
     	 } else if ( request.url == '/' ) {
-    		 response.writeHead(200, {'Content-Type': 'text/html'});
-     		 response.write( self.pageData.indexPage );
-     		 response.end();
+    		 response.writeHead(200, {'Content-Type': 'text/html', 'Content-Encoding' :  'gzip'});
+     		 response.end( self.pageData.indexPage );
     	 } else if ( request.url == '/js/yahoodividends.js' ) {
-    		 response.writeHead(200, {'Content-Type': 'application/javascript'});
-     		 response.write( self.pageData.jsFile );
-     		 response.end();
+    		 response.writeHead(200, {'Content-Type': 'application/javascript', 'Content-Encoding' :  'gzip'});
+     		 response.end( self.pageData.jsFile );
     	 } else if ( request.url == '/css/yahoodividends.css' ) {
-    		 response.writeHead(200, {'Content-Type': 'text/css'});
-     		 response.write( self.pageData.cssFile );
-     		 response.end();
+    		 response.writeHead(200, {'Content-Type': 'text/css', 'Content-Encoding' :  'gzip'});
+     		 response.end( self.pageData.cssFile );
     	 }
      }).listen(this.port);	
      
@@ -81,19 +98,19 @@ mktneutral.dividends.YahooDividendsServer.prototype.doSQLQuery = function(offset
 	var recordsArray = new Array();
 	var responseString = '';
 	
-	var sqlString = 'SELECT * FROM full_data WHERE yield>0.0 ORDER BY ' + sortColumn + ' '  + sortOrder + ' LIMIT '+ limit + ' OFFSET '+ offset;
+	var sqlString = 'SELECT * FROM full_data WHERE yield>0.0 AND yield!="null" ORDER BY ' + sortColumn + ' '  + sortOrder + ' LIMIT '+ limit + ' OFFSET '+ offset;
 	console.log( sqlString );
 
 	self.memoryDb.serialize(function(){
 	 self.memoryDb.each(sqlString, function(err, row){
 	     var record = new Object();
 	     record.t = row.ticker;
-	     record.n = row.name;
-	     record.mc = row.market_cap;
+	     record.n = (row.name == 'undefined' || row.name == null) ? '' : row.name;
+	     record.mc = (row.market_cap == null) ? '' : row.market_cap;
 	     record.l = row.last;
 	     record.y = row.yield;
-	     record.s = row.sector;
-	     record.i = row.industry;
+	     record.s = (row.sector == 'undefined' || row.sector == null) ? '' : row.sector;
+	     record.i = (row.industry == 'undefined' || row.industry == null) ? '' : row.industry;
 	     record.e = row.fte;
 	     recordsArray.push( record );
 	  }, function(){
