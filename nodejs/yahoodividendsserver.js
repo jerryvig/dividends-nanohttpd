@@ -108,7 +108,7 @@ mktneutral.dividends.YahooDividendsServer.prototype.doSQLQuery = function(offset
 	     record.n = (row.name == 'undefined' || row.name == null) ? '' : row.name;
 	     record.mc = (row.market_cap == null) ? '' : row.market_cap;
 	     record.l = row.last;
-	     record.y = row.yield;
+	     record.y = Math.round(row.yield*10000.0)/100.0+'%';
 	     record.s = (row.sector == 'undefined' || row.sector == null) ? '' : row.sector;
 	     record.i = (row.industry == 'undefined' || row.industry == null) ? '' : row.industry;
 	     record.e = row.fte;
