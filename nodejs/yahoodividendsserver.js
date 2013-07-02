@@ -25,24 +25,26 @@ mktneutral.dividends.YahooDividendsServer = function() {
 
 mktneutral.dividends.YahooDividendsServer.prototype.loadFiles = function(){
 	var self = this;
-	this.fs.readFile('./index.html', function(err, data){
-		var buf = new Buffer(data, 'utf-8');
-		self.zlib.gzip(buf, function(_, result){
-			self.pageData.indexPage = result;
-		});
-	}); 
 	
-	this.fs.readFile('./js/yahoodividends.js', function(err, data){
-		var buf = new Buffer(data, 'utf-8');
-		self.zlib.gzip(buf, function(_, result){
-			self.pageData.jsFile = result;
-		});
+	this.loadStaticFile('./index.html', function(result){
+		self.pageData.indexPage = result;
 	});
+	
+	this.loadStaticFile('./js/yahoodividends.js', function(result){
+		self.pageData.jsFile = result;
+	});
+	
+   this.loadStaticFile('./css/yahoodividends.css', function(result){
+	   self.pageData.cssFile = result;
+   });
+};
 
-	this.fs.readFile('./css/yahoodividends.css', function(err, data){
+mktneutral.dividends.YahooDividendsServer.prototype.loadStaticFile = function(path,callback) {
+	var self = this;
+	this.fs.readFile(path, function(err, data){
 		var buf = new Buffer(data, 'utf-8');
 		self.zlib.gzip(buf, function(_, result){
-			self.pageData.cssFile = result;
+			 callback(result);
 		});
 	});
 };
