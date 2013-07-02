@@ -73,6 +73,35 @@ th:active {
 	color: #007FFF;
 }
 
+td {
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
 .yieldCell {
 	text-align: right;
+}
+
+#tickerColumnHeader {
+	width: 11%;
+}
+
+#marketCapColumnHeader {
+	width: 11%;
+}
+
+#yieldColumnHeader {
+	width: 11%;
+}
+
+#nameColumnHeader {
+	width: 22%;
+}
+
+#sectorColumnHeader {
+	width: 22%;
+}
+
+#industryColumnHeader {
+	width: 22%;
 }
